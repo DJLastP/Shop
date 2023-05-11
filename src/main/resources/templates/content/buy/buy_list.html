@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{fragment/member_layout}">
+<!-- 연결해야할 외부 CSS파  -->
+<th:block layout:fragment="content_css">
+<!--	<link rel="stylesheet" href="/"> -->
+<style>
+.buy-title{
+	font-weight: bold;
+	margin-right: 1rem; 
+}	
+.buy-index{
+	font-size: 1.1rem;
+	font-weight: bold;
+}
+</style>
+</th:block>
+
+<th:block layout:fragment="content">
+	<!-- 여기에 html 파일을 작 -->
+
+<div class="row mb-3 text-center container">
+	<div class="col">
+	
+			<form class="" id="searchForm" action="buyList" method="post">
+				<input type="hidden" name="personalMenu" value="2">
+				<div class="row mb-3">
+					<div class="col-2 d-grid">
+						<input type="button" class="btn btn-primary" value="전체" onclick="location.href='/buy/buyList?personalMenu=2'">
+					</div>
+					<div class="col-2 d-grid">
+						<input type="button" class="btn btn-primary" value="최근 1개월" onclick="searchBuyList(1);">
+					</div>
+					<div class="col-2 d-grid">
+						<input type="button" class="btn btn-primary" value="최근 3개월" onclick="searchBuyList(3);">
+					</div>
+					<label class="col-1 col-form-label">직접입력</label>
+					<div class="col-2">
+						<input style="font-size: 14px;" type="date" th:value="${searchVO.firstDate}" id="firstDate" name="firstDate" class="form-control">
+					</div>
+					<div class="col-2">
+						<input style="font-size: 14px;" type="date" th:value="${searchVO.lastDate}" id="lastDate" name="lastDate" class="form-control">
+					</div>
+					<div class="col-1 d-grid">
+						<input type="button" class="btn btn-primary" value="검색" onclick="searchBuyList();">
+					</div>
+				</div>
+			</form>
+		
+		
+		<div class="row mb-3">
+			<div class="offset-10 col-2 d-grid">
+				<input data-toggle-status="close" type="button" class="btn btn-primary" value="전체 펼치기" onclick="toggle_all(this);">
+			</div>
+		</div>
+		
+		
+		<div class="row mb-3">
+			<div class="col">
+				<th:block th:each="buyList, state : ${buyLists}">
+				<div class="accordion" id="accordionPanelsStayOpenExample">
+				  <div class="accordion-item">
+				    <h2 class="accordion-header">
+				      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="${'#panel_' + state.count}" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+						<span class="buy-titlle buy-index">[[${#lists.size(buyLists)} - ${state.index} + ' | ']]</span>
+						<span class="buy-title">[[${'  구매일시 : ' + buyList.buyDate}]]</span>
+						<span class="buy-title">[[${ '  구매금액 : ' + #numbers.formatCurrency(buyList.buyPrice)}]]</span> 
+						<span class="buy-title">[[${' 구매내역 : ' + buyList.buyDetailList[0].itemName}]]</span>
+							<th:block  th:if="${buyList.buyDetailList.size() > 1}">
+								<span class="buy-title">[[${' 외 ' + (buyList.buyDetailList.size() - 1)  + ' 건 '}]]</span>
+							</th:block>
+				      </button>
+				    </h2>
+				    <div th:id="${'panel_' + state.count}" class="accordion-collapse collapse">
+				      <div class="accordion-body">
+							<table class="table table-striped">
+								<colgroup>
+									<col width="10%">
+									<col width="">
+									<col width="15%">
+									<col width="10%">
+									<col width="20%">
+								</colgroup>
+								<tr>
+									<td>No</td>
+									<td>상품정보</td>
+									<td>가격</td>
+									<td>수량</td>
+									<td>구매가격</td>
+								</tr>
+								<tbody>
+									<th:block th:each="buyDetail,detailState : ${buyList.buyDetailList}">
+									<tr>
+										<td>[[${#lists.size(buyList.buyDetailList)} - ${detailState.index}]]</td>
+										<td>
+											<img width="50px;" th:src="${'/upload/' + buyDetail.attachedFileName}">
+											[[${buyDetail.itemName}]]
+										</td>
+										<td>[[${#numbers.formatCurrency(buyDetail.itemPrice)}]]</td>
+										<td>[[${buyDetail.buyCnt}]]</td>
+										<td>[[${#numbers.formatCurrency(buyDetail.buyDetailPrice)}]]</td>
+									</tr>
+									</th:block>
+								</tbody>
+							</table>
+				      </div>
+				    </div>
+				  </div>
+				</div>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</div>
+</th:block>
+
+<!--  연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+<script type="text/javascript" src="/js/buy/buy_list.js"></script>
+</th:block>
+</html>

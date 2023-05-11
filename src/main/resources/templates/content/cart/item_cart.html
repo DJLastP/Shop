@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{fragment/member_layout}">
+<!-- 연결해야할 외부 CSS파  -->
+<th:block layout:fragment="content_css">
+<!--	<link rel="stylesheet" href="/"> -->
+</th:block>
+
+<th:block layout:fragment="content">
+<div class="low">
+	<div class="text-center col">
+		<div class="low">
+		<table class="table table-striped">
+			<colgroup>
+				<col width="10%">
+				<col width="10%">
+				<col width="*">
+				<col width="15%">
+				<col width="18%">
+				<col width="10%">
+				<col width="10%">
+			</colgroup>
+			<thead class="table-head">
+			<tr>
+				<td>
+					<input type="checkbox" id="cartCheckBoxAll" class="form-check-input" checked onchange="checkBox();">
+				</td>
+				<td>상품이미지</td>
+				<td>상품명</td>
+				<td>가격</td>
+				<td>수량</td>
+				<td>총 가격</td>
+				<td>삭제</td>
+			</tr>
+			</thead>
+			<th:block th:if="${#lists.size(cartList) == 0}">
+				<tr>
+					<td colspan="7">장바구니에 담긴 상품이 없어요</td>
+				</tr>
+			</th:block>
+			<tbody>
+			<th:block th:if="${#lists.size(cartList) != 0}">
+				<th:block th:each="cartList,state : ${cartList}">
+					<input type="hidden" name="" class="cartCodeInput" th:value="${cartList.cartCode}">
+					<tr id="cartListTd">
+						<td id="checkboxTd">
+							<input type="checkbox" class="form-check-input cartCheckBox chk" id="" checked th:onchange="checkBoxes();"
+							th:data-item-code="${cartList.itemCode}"	th:data-buy-cnt="${cartList.cartCnt}" th:data-detail-buy-price="${cartList.itemPrice} * ${cartList.cartCnt}">
+						</td>
+						<td>
+							<img width="100px;" th:src="@{'/upload/'} + ${cartList.attachedFileName}">
+						</td>
+						<td> [[${cartList.itemName}]]</td>
+						<td>
+							<span class="itemPrice">[[${cartList.itemPrice}]]</span>원
+						</td>
+						<td id="cntTd">
+							<div class="row">
+								<div class="col-6">
+									<input type="number" min="1" id="" class="form-control cartCnt" th:value="${cartList.cartCnt}" th:onchange='totalPrice([[${cartList.itemPrice}]], [[${state.index}]], event);'>
+								</div>
+								<div class="col-6">
+									<input type="button" class="btn btn-primary " value="수정" th:onclick='updateCartCnt([[${cartList.cartCode}]], [[${state.index}]]);'>
+								</div>
+							</div>
+						</td>
+						<td id="totalPriceTd">
+							<span class="sumPrice">
+								[[${cartList.itemPrice} * ${cartList.cartCnt}]]
+							</span>
+							원
+						</td>
+						<td>
+							<input type="submit" class="btn btn-primary " value="삭제" th:onclick="deleteCartItem([[${cartList.cartCode}]], [[${state.index}]], event);">
+						</td>
+					</tr>
+				</th:block>
+			</th:block>
+			</tbody>
+		</table>
+		</div>
+		<div class="row">
+			<div class="col-9">
+			</div>
+			<div class="col-3" id="checkedPrice">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-4"></div>
+			<div class="col">
+				<input type="button" class="btn btn-primary" value="선택구매" onclick="buys();">
+			</div>
+			<div class="col">
+				<input type="button" class="btn btn-primary" value="선택삭제" onclick="checkedDelete();">
+			</div>
+			<div class="col-4"></div>
+		</div>
+	</div>
+</div>
+</th:block>
+
+<!--  연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+ <script type="text/javascript" src="/js/cart/item_cart.js"></script>
+</th:block>
+</html>

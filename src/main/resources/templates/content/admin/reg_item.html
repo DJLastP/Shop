@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragment/admin_layout}">
+	
+<th:block layout:fragment="content_css">
+<!-- 	<link rel="stylesheet" href="/css/board_list.css"> -->
+</th:block>
+
+<th:block layout:fragment="content">
+
+<form th:action="@{/admin/insertItem}" method="post" enctype="multipart/form-data">
+	<div class="row">
+		<div class="mb-3 col-4">
+			<label for="cateList" class="form-label">상품카테고리</label>
+	      	<select id="cateList" class="form-select" name="cateCode">
+	      	<th:block th:each="cateList : ${categoryList}">
+	      			<option th:value="${cateList.cateCode}">[[${cateList.cateName}]]</option>
+	      	</th:block>
+	      </select>
+	    </div>
+	  <div class="mb-3 col-8">
+	    <label for="exampleInputEmail1" class="form-label">상품명</label>
+	    <input type="text" class="form-control" id="itemName" name="itemName" aria-describedby="emailHelp">
+	    <div id="itemName" class="form-text"></div>
+	  </div>
+  </div>
+  <div class="row">
+	  <div class="mb-3 col-6">
+	    <label for="itemPrice" class="form-label">상품가격</label>
+	    <input type="text" name="itemPrice" class="form-control" id="itemPrice">
+	  </div>
+	  <div class="mb-4 col-6">
+	    <label for="itemStock" class="form-label">재고</label>
+	    <input type="number" name="itemStock" class="form-control" id="itemStock" value="10" max="100" min="10">
+	  </div>
+  </div>
+  <div class="form-floating mb-3">
+  	<textarea style="height: 150px;" class="form-control" id="itemIntro" name="itemIntro"></textarea>
+ 	 <label for="itemIntro">상품소개</label>
+	</div>
+  <div class="row">
+	  	<div class="form-check mb-3 col-2 ms-3">
+	  		<input class="form-check-input" type="radio" name="itemStatus" id="itemStatus1" value="1" checked>
+	 	 	<label class="form-check-label" for="flexRadioDefault1">
+	 			판매중
+	 	 	</label>
+		</div>
+	  	<div class="form-check mb-3 col-2 ms-3">
+	  		<input class="form-check-input" type="radio" name="itemStatus" id="itemStatus1" value="2">
+	 	 	<label class="form-check-label" for="flexRadioDefault1">
+	 			준비중
+	 	 	</label>
+		</div>
+		<div class="form-check mb-2 col-2">
+		  <input class="form-check-input" type="radio" name="itemStatus" id="itemStatus2" value="3">
+		  <label class="form-check-label" for="flexRadioDefault2">
+		    매진
+		  </label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="mb-3 col-6">
+		  <label for="formFile" class="form-label">메인이미지</label>
+		  <input class="form-control" type="file" id="formFile" name="mainImg">
+		</div>
+		<div class="mb-3 col-6">
+		  <label for="formFile" class="form-label">서브 이미지</label>
+		  <input class="form-control" type="file" multiple id="formFile" name="subImg">
+		</div>
+	</div>
+	<div class="d-grid gap-2 col-4 mx-auto">
+  		<button type="submit" class="btn btn-primary">등 록</button>
+	</div>
+</form>
+
+</th:block>
+
+
+<th:block layout:fragment="content_js">
+</th:block>
+</html>

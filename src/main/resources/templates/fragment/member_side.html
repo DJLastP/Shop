@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="memberSideFragment">
+	<div class="row">
+		<div class="col">
+			<div class="list-group text-center" id="sideMenu">
+						<a  href="/cart/itemCart?personalMenu=1" class="list-group-item list-group-item-action"
+						th:classappend="${personalMenu == '1' ? 'active' : ''}">
+							장바구니
+						</a>
+						<a  href="/buy/buyList?personalMenu=2" class="list-group-item list-group-item-action" 
+						th:classappend="${personalMenu == '2' ? 'active' : ''}">
+							구매 내역
+						</a>
+						<a  href="#" class="list-group-item list-group-item-action">
+							개인정보변경
+						</a>
+			</div>
+		</div>
+	</div>
+</th:block>
+</html>

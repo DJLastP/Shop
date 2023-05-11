@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{fragment/admin_layout}">
+<!-- 연결해야할 외부 CSS파  -->
+<th:block layout:fragment="content_css">
+<!--	<link rel="stylesheet" href="/"> -->
+</th:block>
+
+<th:block layout:fragment="content">
+	<div class="row" >
+		<div class="col-10">
+			<div class="low">
+				<div class="col">카테고리 등록</div>
+			</div>
+			<div class="low">
+				<div class="col">
+					<form class="row mb-3">
+						<div class="col-9">
+							<input id="cateName" type="text" class="form-control"
+								placeholder="추가 할 카테고리명 입력">
+						</div>
+						<div class="col-3 d-grid gap-2">
+							<button type="button" class="btn btn-primary mb-3" onclick="regCategory();">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-file-earmark-plus" viewBox="0 0 16 16">
+  									<path d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"/>
+  									<path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/>
+								</svg>
+								등록	
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">카테고리목록</div>
+			</div>
+			<div class="row">
+         <div class="col" style="font-size: 16px; color: red; font-style: italic;">
+            * 순번은 카테고리 목록이 화면에 보이는 순서입니다.
+         </div>
+      </div>
+			<div class="row">
+				<div class="col">
+					<table id="cateListTable" class="table table-striped table-hover text-center align-middle">
+						<colgroup>
+							<col width="10%">
+							<col width="25%">
+							<col width="*">
+							<col width="15%">
+							<col width="15%">
+						</colgroup>
+						<thead class="table-head">
+							<tr>
+								<td>No</td>
+								<td>카테고리명</td>
+								<td>사용여부</td>
+								<td>순번</td>
+								<td></td>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	<div class="col-2"></div>
+	</div>
+</th:block>
+
+<!--  연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+<script type="text/javascript" src="/js/admin/cate_manage.js">
+</script>
+<script>
+  window.onload = function(){
+	  getCateListAjax();
+  }
+</script>
+</th:block>
+</html>

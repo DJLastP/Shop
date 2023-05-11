@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+			xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<th:block th:fragment="headerFragment">
+	<div class="row">
+		<div class="col text-end" sec:authorize="isAnonymous()">
+			<span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#joinModal">JOIN</span>
+			<span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#loginModal">LOGIN</span>
+		</div>
+		<div class="col text-end" sec:authorize="isAuthenticated()">
+			<span>[[${#authentication.name + '님 반갑습니다.'}]]</span>
+			<span><a href="/cart/itemCart">내정보확인</a></span>
+			<span><a href="/member/logout">LOGOUT</a></span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col text-center">
+			<span class="header-title">BOOK SHOP</span>
+		</div>
+	</div>
+	
+	
+	<div class="row">
+		<div class="col text-start">
+			<nav class="navbar navbar-expand-lg bg-body-tertiary">
+				<div class="container-fluid">
+					<div class="collapse navbar-collapse" id="navbarNav">
+						<ul class="navbar-nav">
+							<li class="nav-item"><a class="nav-link active"
+								aria-current="page" href="/item/itemList">Home</a></li>
+							<th:block sec:authorize="isAnonymous()">
+								<th:block th:each="cateList : ${cateList} ">
+									<li class="nav-item"><a class="nav-link" href="">[[${cateList.cateName}]]</a>
+									</li>
+								</th:block>	
+							</th:block>
+							<th:block sec:authorize="isAuthenticated()">
+								<th:block sec:authorize="hasRole('ROLE_USER')">
+									<th:block th:each="cateList : ${cateList} ">
+										<li class="nav-item"><a class="nav-link" href="">[[${cateList.cateName}]]</a>
+										</li>
+									</th:block>	
+								</th:block>
+								<th:block sec:authorize="hasRole('ROLE_ADMIN')">
+									<th:block th:each="cateList : ${cateList} ">
+										<li class="nav-item"><a class="nav-link" th:href="@{'/admin' + ${cateList.menuUrl}(menuCode=${cateList.menuCode},subMenuCode=${cateList.subMenuCode})}">[[${cateList.menuName}]]</a>
+										</li>
+									</th:block>	
+								</th:block>
+							</th:block>
+						</ul>
+					</div>
+				</div>
+			</nav>
+		</div>
+	</div>
+
+
+<!--login Modal -->
+<div class="modal fade" id="loginModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+	      <form action="" id="loginForm">
+	      	<div class="row mb-3">
+	      		<div class="col-12">
+	      			<input type="text" id="memId" class="form-control" placeholder="Input your ID">
+	      		</div>
+	  	    </div>
+	      	<div class="row mb-3">
+	      		<div class="col-12" id="loginErrorDiv">
+	      			<input type="password" id="memPw" class="form-control" placeholder="Input your Password">
+	      		</div>
+	  	    </div>
+	  	    <div class="row">
+	  	    	<div class="col text-end mb-1">
+					<span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#findPwModal">비밀번호 찾기</span>
+	  	    	</div>
+	      		<div class="col-12 d-grid">
+	      			<input type="button" value="LOGIN" class="btn btn-primary" onclick="login();">
+	      		</div>
+	  	    </div>
+	      </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--join Modal -->
+<div class="modal fade" id="joinModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+			<form class="row g-3" id="joinForm" action="/member/joinMember" method="post">
+				<div class="col-9">
+					<label for="memId" class="form-label">ID</label> 
+					<input type="text" name="memId" class="form-control" id="memId" onkeyup="setDisabled();">
+				</div>
+				<div class="col-3 d-grid">
+					<label for="check_id" class="form-label"> &nbsp;</label> 
+					<input type="button"  class="btn btn-primary" id="check_id" value="중복체크" onclick="checkId();">
+				</div>
+				
+				
+				<div class="col-12">
+					<label for="memPw" class="form-label">Password</label> 
+					<input type="password" name="memPw" class="form-control" id="memPw1">
+				</div>
+				<div class="col-12">
+					<label for="check_pw" class="form-label">Confirm Password</label> 
+					<input type="password" class="form-control" id="memPw2">
+				</div>
+				<div class="col-12">
+					<label for="memName" class="form-label">Name</label> 
+					<input type="text" name="memName" class="form-control" id="memName">
+				</div>
+				<div class="col-3">
+					<div class="form-check">
+     					<input class="form-check-input" type="radio" id="gender_male" name="gender" checked value="M">
+      					<label class="form-check-label" for="gender_male">Male</label>
+   					 </div>
+				</div>
+				<div class="col-3">
+					<div class="form-check">
+     					<input class="form-check-input" type="radio" id="gender_female" name="gender" value="F">
+      					<label class="form-check-label" for="gender_female">Female</label>
+   					 </div>
+				</div>
+				<div class="col-6"></div>
+				<div class="col-4">
+					<label for="tell_1" class="form-label">TELL</label> 
+						<select	 id="tell_1" name="memTell" class="form-select">
+							<option value="010" selected>010</option>
+							<option value="011">011</option>
+							<option value="016">016</option>
+							<option value="019">019</option>
+						</select>
+				</div>
+				<div class="col-4">
+					<label for="tell_2" class="form-label">&nbsp;</label> 
+					<input	type="text" name="memTell" class="form-control" id="tell_2">
+				</div>
+				<div class="col-4">
+					<label for="tell_3" class="form-label">&nbsp;</label> 
+					<input type="text" name="memTell" class="form-control" id="tell_3">
+				</div>
+				<div class="col-9">
+					<label for="memAddr" class="form-label">Address</label> 
+					<input type="text" name="memAddr" class="form-control" id="memAddr" readonly onclick="getAddr();">
+				</div>
+				<div class="col-3 d-grid">
+					<label for="search_btn" class="form-label"> &nbsp;</label> 
+					<input type="button"  class="btn btn-primary" id="search_btn" value="Search" onclick="getAddr();">
+				</div>
+				<div class="col-12">
+					<input	type="text" name="addrDetail" class="form-control">
+				</div>
+				<div class="col-12 text-center">
+					<button onclick="join();" id="joinBtn" type="button" class="btn btn-primary" disabled>J O I N</button>
+				</div>
+			</form>
+		</div>
+    </div>
+  </div>
+</div>
+
+<!-- 비밀번호 찾기 모달 -->
+
+
+<div class="modal fade" id="findPwModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+		<form action="" id="loginForm">
+			<div class="row text-center">
+				<h3>비밀번호 찾기</h3>
+			</div>
+	      	<div class="row mb-3">
+	      		<div class="col-12">
+	      			<input type="text" id="memIdforFindPw" name="memId" class="form-control" placeholder="Input your ID">
+	      		</div>
+	  	    </div>
+	      	<div class="row mb-3">
+	      		<div class="col-12">
+	      			<input type="text" id="memNameforFindPw" name="memName" class="form-control" placeholder="Input your Name">
+	      		</div>
+	  	    </div>
+	  	    <div class="row">
+	      		<div class="col-12 d-grid">
+	      			<button onclick="findPw(this);" class="btn btn-primary" type="button">
+						비밀번호 찾기
+					</button>
+	      		
+	      		
+	      		</div>
+	  	    </div>
+		</form>
+      </div>
+    </div>
+  </div>
+</div>
+
+</th:block>
+</html>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="memberMapper">
+	<resultMap type="com.study.shop.member.vo.MemberVO" id="member">
+		<id		 column="MEM_ID"			property="memId"/>
+		<result column="MEM_PW"			property="memPw"/>
+		<result column="MEM_NAME"		property="memName"/>
+		<result column="GENDER"				property="gender"/>
+		<result column="MEM_TELL"			property="memTell"/>
+		<result column="MEM_ADDR"		property="memAddr"/>
+		<result column="ADDR_DETAIL"	property="addrDetail"/>
+		<result column="MEM_STATUS"		property="memStatus"/>
+		<result column="MEM_ROLE"			property="memRole"/>
+	</resultMap>
+	
+	<select id="checkId" resultType="int">
+		SELECT COUNT(MEM_ID)
+		FROM SHOP_MEMBER
+		WHERE MEM_ID = #{memId}
+	</select>
+	
+	<insert id="joinMember">
+		INSERT INTO SHOP_MEMBER (
+			MEM_ID
+			, MEM_PW
+			, MEM_NAME
+			, GENDER
+			, MEM_TELL
+			, MEM_ADDR
+			,	ADDR_DETAIL
+		) VALUES (
+			#{memId}
+			, #{memPw}
+			, #{memName}
+			, #{gender}
+			, #{memTell}
+			, #{memAddr}
+			, #{addrDetail}
+		)
+	</insert>
+	
+	<select id="login" resultMap="member">
+		SELECT MEM_ID
+					, MEM_PW
+					, MEM_ROLE
+		FROM SHOP_MEMBER
+		WHERE MEM_ID = #{memId}
+<!-- 		AND MEM_PW = #{memPw}
+		AND MEM_STATUS != 3 -->
+	</select>
+	
+	<update id="findPw">
+	UPDATE SHOP_MEMBER
+	SET MEM_PW = #{memPw}
+	WHERE MEM_ID = #{memId}
+	AND MEM_NAME = #{memName}
+	</update>
+	
+	<select id="getEmail" resultType="String">
+	SELECT MEM_EMAIL
+	FROM SHOP_MEMBER
+	WHERE MEM_ID = #{memId}
+	AND MEM_NAME = #{memName}
+	</select>
+</mapper>
+

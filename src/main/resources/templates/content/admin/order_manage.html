@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{fragment/admin_layout}">
+<!-- 연결해야할 외부 CSS파  -->
+<th:block layout:fragment="content_css">
+<link rel="stylesheet" href="/css/order_manage.css">
+</th:block>
+
+<th:block layout:fragment="content">
+<div class="row container text-center">
+	<div class="col">
+		<form action="/admin/orderManage" method="post" id="searchForm">
+			<div class="row mb-1">
+				<div class="col-11 px-0 mx-0">
+					<div class="row mb-2">
+						<div class="col ps-0 ms-0 pt-1" style="width: 100px;">
+							<span> 주문상태 </span>
+						</div>
+							<div class="col-10 px-0 mx-0 text-start pt-1" >
+								<div class="form-check form-check-inline ps-12 ms-3">
+									<input type="checkbox" class="form-check-input" id="searchCheckBox" onchange="checkBoxControl();"> <label
+										class="form-check-label" for="">전체</label>
+								</div>
+
+								<div th:each="status : ${statusList}" class="col form-check form-check-inline">
+									<input type="checkbox" class="form-check-input setCheckBox" name="status" th:value="${status}" onchange="checkBoxesControl();"> 
+									<label class="form-check-label" for="">[[${status}]]</label>
+								</div>
+							</div>
+						</div>
+					<div class="row mb-3 pt-1">
+						<div class="col-2 ps-0 ms-0 pt-2">
+							<span>주문일시</span>
+						</div>
+						<div class="col-3 pe-1">
+							<div class="input-group pe-0">
+								<span class="input-group-text">From</span> 
+								<input type="date" class="form-control" name="fromDate" id="setFromDate">
+							</div>
+						</div>
+						<div class="col px-0 pe-1">
+							<div class="input-group pe-0">
+								<span class="input-group-text">To</span> 
+								<input type="date" class="form-control" name="toDate" id="setToDate">
+							</div>
+						</div>
+						<div class="col px-0">
+							<select class="form-select" name="searchBy" id="setSearchBy" >
+								<option value="buyCode" selected>구매코드</option>
+								<option value="memId">구매자ID</option>
+								<option value="memTell">연락처</option>
+							</select>
+						</div>
+					<div class="col ps-0 pe-3">
+						<input type="text" class="form-control d-grid" id="setSearchValue" name="searchValue" value="" style="width: 170px;">
+					</div>	
+				</div>
+			</div>
+		
+			<div class="col-1 d-grid px-0 py-1">
+				<input type="submit" class="btn btn-primary" value="검색">
+			</div>
+		</div>
+		
+		<div class="row mb-3">
+			<div class="col-1 d-grid ps-0 pe-1">
+				<input type="button" class="btn" th:classappend="${searchData.orderBy != null && searchData.orderBy.equals('date') ? 'btn-primary' : 'btn-secondary'}" value="날짜순" name="regDate" onclick="searchByDate();">
+			</div>
+			<div class="col-1 d-grid ps-1">
+				<input type="button" class="btn" th:classappend="${searchData.orderBy != null && searchData.orderBy.equals('status') ? 'btn-primary' : 'btn-secondary'}" name="regDate" value="상태순" onclick="searchByStatus();">
+			</div>
+			
+			<div class="col-8 order-info-label text-start" >
+				*상태순으로 정렬 시 배송완료, 배송준비, 주문확인, 주문접수 순으로 조회됩니다.
+			</div>
+		</div>
+		<th:block th:each="status : ${searchData.status}">
+			<input type="hidden" class="status" th:value="${status}">
+		</th:block>
+			<input type="hidden" id="fromDate" th:value="${searchData.fromDate}">
+			<input type="hidden" id="toDate" th:value="${searchData.toDate}">
+			<input type="hidden" id="searchBy" th:value="${searchData.searchBy}">
+			<input type="hidden" id="searchValue" th:value="${searchData.searchValue}">
+			<input type="hidden" id="orderBy" name="orderBy" th:value="${searchData.orderBy}">
+			<input type="hidden" id="nowPage" name="nowPage" th:value="${searchData.pageVO.nowPage}">
+		</form>
+	
+	<!--주문상태별 데이터 테이블  -->
+	
+		<div class="row mb-3  text-center">
+			<div class="col px-0">
+				<table class="table table-striped table-hover mb-0">
+					<colgroup>
+						<col width="5%">
+						<col width="13%">
+						<col width="15%">
+						<col width="*">
+						<col width="15%">
+						<col width="10%">
+						<col width="15%">
+					</colgroup>
+					<thead class="table-primary">
+						<tr>
+							<td>No</td>
+							<td>구매코드</td>
+							<td>구매자ID</td>
+							<td>구매자연락처</td>
+							<td>결제금액</td>
+							<td>주문상태</td>
+							<td>구매날짜</td>
+						</tr>
+					</thead>
+					<tbody class="table-light table-group-divider">
+						<tr th:each="order, state : ${orderList}" style="cursor: pointer;" th:onclick="openModal([[${order['BUY_CODE']}]], [[${order['MEM_ID']}]]);">
+							<td>[[${state.count}]]</td>
+							<td>[[${order['BUY_CODE']}]]</td>
+							<td>[[${order['MEM_ID']}]]</td>
+							<td>[[${order['MEM_TELL']}]]</td>
+							<td>[[${order['BUY_PRICE']}]]</td>
+							<td>[[${order['STATUS_NAME']}]]</td>
+							<td>[[${order['BUY_DATE']}]]</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		
+		<!-- 페이지버튼 -->
+		
+		<div class="row text-center">
+			<div class="col d-flex justify-content-center">
+				<nav aria-label="Page navigation example">
+		 		 <ul class="pagination">
+				 	   <li class="page-item" th:classappend="${searchData.pageVO.prev ? '' : 'disabled'}">
+				    		<a class="page-link" th:onclick="prevPage([[${searchData.pageVO.beginPage}]]);" style="cursor:pointer;">&laquo;</a>
+				    	</li>
+			   			<th:block th:each="pageNum : ${#numbers.sequence(searchData.pageVO.beginPage, searchData.pageVO.endPage)}">
+						    <li class="page-item">
+						    	<a class="page-link" th:classappend="${searchData.pageVO.nowPage == pageNum ? 'active' : ''}" th:onclick="nowPage([[${pageNum}]]);" style="cursor:pointer;"><span th:text="${pageNum}"></span></a>
+						    </li>
+						</th:block>
+					    <li class="page-item" th:classappend="${searchData.pageVO.next ? '' : 'disabled'}">
+					    	<a class="page-link" th:onclick="nextPage([[${searchData.pageVO.endPage}]]);" style="cursor:pointer;">&raquo;</a>
+					    </li>
+				  </ul>
+				</nav>
+			</div>
+		</div>
+		
+
+		<div class="row mb-3 text-center"
+				th:each="orderLists, state : ${orderStatus}">
+			<div class="col">
+				<form action="/admin/updateStatus" method="post"
+							th:id="${'updateStatusForm' + state.index}">
+					<span style="font-size: 20px; font-weight: bold;">
+						[[${statusList[state.index]}]]
+					</span>
+						<div class="row mb-3">
+							<div class="col-12 px-0">
+								<table class="table table-striped  table-primary table-hover mb-0">
+									<colgroup>
+										<col width="5%">
+										<col width="5%">
+										<col width="13%">
+										<col width="15%">
+										<col width="*">
+										<col width="15%">
+										<col width="10%">
+										<col width="15%">
+									</colgroup>
+								<thead class="">
+									<tr>
+										<td>
+											<input type="checkbox"
+														th:id="${'statusCheckbox' + state.index}"
+														class="form-check-input"
+														th:onchange="statusCheckBoxControl([[${state.index}]]);">
+										</td>
+										<td>No</td>
+										<td>구매코드</td>
+										<td>구매자ID</td>
+										<td>연락처</td>
+										<td>결제금액</td>
+										<td>주문상태</td>
+										<td>구매날짜</td>
+									</tr>
+								</thead>
+							</table>
+						</div>
+						
+						<div class="col-12 my-scroll px-0">
+							<table class="table table-striped  table-light table-hover mb-0">
+								<colgroup>
+									<col width="5%">
+									<col width="5%">
+									<col width="13%">
+									<col width="15%">
+									<col width="*">
+									<col width="15%">
+									<col width="10%">
+									<col width="15%">
+								</colgroup>
+								<tbody class="table-group-divider">
+									<tr th:each="order, index : ${orderLists}">
+										<td><input
+											th:class="${'updateStatusCheckBo form-check-input ' + 'statusCheckBoxes' + state.index}"
+											type="checkbox" th:value="${order['BUY_CODE']}"
+											name="buyCodes"
+											th:onchange="statusCheckBoxesControl([[${state.index}]]);">
+										</td>
+										<td>[[${index.count}]]</td>
+										<td>[[${order['BUY_CODE']}]]</td>
+										<td>[[${order['MEM_ID']}]]</td>
+										<td>[[${order['MEM_TELL']}]]</td>
+										<td>[[${order['BUY_PRICE']}]]</td>
+										<td>[[${order['STATUS_NAME']}]]</td>
+										<td>[[${order['BUY_DATE']}]]</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+						
+						
+					<div class="row mb-3 ">
+						<div class="col-4 offset-4 d-grid">
+							<input th:id="${'updateStatusBtn' + state.index}"
+								th:unless="${state.last}" type="button"
+								class="btn btn-primary"
+								th:value="${statusList[state.index] + ' -> ' + statusList[state.count]}"
+								th:onclick="updateStatus([[${state.index}]]);">
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- 모달!!!! -->
+<div class="modal fade" id="itemDetail" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body">
+      	<div class="row text-center">
+      		<div class="col">
+      			<table class="buyDetailTable table table-striped">
+      				<thead>
+      					<tr>
+      						<td>상품명</td>
+      						<td>상품가격</td>
+      						<td>구매수량</td>
+      						<td>개당가격</td>
+      					</tr>
+      				</thead>
+      				<tbody >
+      				</tbody>
+      			</table>
+      			<div class="row text-center" id="buyDetailBody">
+      			</div>
+      		</div>
+      	</div>
+		
+		
+
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+</th:block>
+
+<!--  연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+ <script type="text/javascript" src="/js/admin/order_manage.js"></script>
+</th:block>
+</html>

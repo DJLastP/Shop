@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{fragment/user_layout}">
+<!-- 연결해야할 외부 CSS파  -->
+<th:block layout:fragment="content_css">
+<!--	<link rel="stylesheet" href="/"> -->
+<style>
+.card:hover {
+	cursor: pointer
+}
+</style>
+</th:block>
+
+<th:block layout:fragment="content">
+<div>
+	<div class="row text-center">
+	 	 <th:block th:each="list : ${itemListForUser}">
+			<div class="col mb-3">
+				<div class="card h-100" style="width: 18rem;" th:onclick="|location.href='@{/item/itemDetail(itemCode=${list.itemCode})}'|">
+					 	<img th:src="@{/upload/} + ${list.imgList[0].attachedFileName}" class="card-img-top">
+					<div class="card-body">
+						<h5 class="card-title">[[${list.itemName}]]</h5>
+				 	 	<p class="card-text">[[${list.itemPrice + '원'}]]</p>
+	 				</div>
+				</div>
+			</div>
+		</th:block>
+	</div>
+</div>
+
+</th:block>
+
+<!--  연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+ <!--	<script type="text/javascript" src="/"></script> -->
+</th:block>
+</html>
